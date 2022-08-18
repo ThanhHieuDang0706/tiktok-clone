@@ -21,7 +21,7 @@ const Home = ({ videos }: IProps) => {
 };
 
 export const getServerSideProps = async () => {
-  const { data } = await axios.get(`${API_BASE_URL}/post`);
+  const { data } = await axios.get(`${process.env.API_BASE_URL}/post`);
 
   return {
     props: {
