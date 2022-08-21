@@ -6,6 +6,7 @@ import Link from "next/link";
 import { HiVolumeUp, HiVolumeOff } from "react-icons/hi";
 import { BsFillPlayFill, BsFillPauseFill } from "react-icons/bs";
 import { GoVerified } from "react-icons/go";
+import { onVideoClickHandler } from "../utils/video";
 
 interface IProps {
   post: Video;
@@ -17,16 +18,7 @@ const VideoCard: NextPage<IProps> = ({ post }: IProps) => {
   const [isVideoMuted, setIsVideoMuted] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  const onVideoPress = () => {
-    console.log("press");
-    if (playing) {
-      videoRef?.current?.pause();
-      setPlaying(false);
-    } else {
-      videoRef?.current?.play();
-      setPlaying(true);
-    }
-  };
+  const onVideoClick = onVideoClickHandler(playing, videoRef, setPlaying);
 
   return (
     <div className="flex flex-col border-b-2 border-gray-200 pb-6">
@@ -64,9 +56,9 @@ const VideoCard: NextPage<IProps> = ({ post }: IProps) => {
         </div>
       </div>
 
-      <div className="lg:ml-20 flex gap-4 relative">
+      <div className="lg:ml-20 justify-center flex gap-4 relative">
         <div
-          className="rounded-3xl"
+          className="rounded-3xl flex justify-center"
           onMouseEnter={() => {
             setIsHover(true);
           }}
@@ -74,14 +66,15 @@ const VideoCard: NextPage<IProps> = ({ post }: IProps) => {
             setIsHover(false);
           }}
         >
-          <Link href="/">
+          <Link href={`/detail/${post._id}`}>
             <video
               ref={videoRef}
               src={post.video.asset.url}
               loop
-              className="lg:w[600px] h-[300px] md:h-[400px] 
+              muted={isVideoMuted}
+              className="lg:w-[600px] h-[300px] md:h-[400px] 
               lg:h-[530px] w-[200px] 
-              rounded-2xl cursoor-pointer
+              rounded-2xl cursor-pointer
             bg-gray-100"
             />
           </Link>
@@ -89,16 +82,16 @@ const VideoCard: NextPage<IProps> = ({ post }: IProps) => {
           {isHover && (
             <div
               className="absolute bottom-6 
-              cursor-pointer left-8 md:left-14 lg:left-0 flex 
-              gap-10 lg:justify-center w-[100px] 
-              md:w-[50px] lg:w-[60px] p-3"
+              cursor-pointer flex 
+              gap-10
+              p-3 justify-center"
             >
               {playing ? (
-                <button onClick={onVideoPress}>
+                <button onClick={onVideoClick}>
                   <BsFillPauseFill className="text-black text-2xl lg:text-4xl" />
                 </button>
               ) : (
-                <button onClick={onVideoPress}>
+                <button onClick={onVideoClick}>
                   <BsFillPlayFill className="text-black text-2xl lg:text-4xl" />
                 </button>
               )}
