@@ -10,6 +10,9 @@ import axios from "axios";
 import { BASE_URL } from "../../utils";
 import { Video } from "../../types";
 import { onVideoClickHandler } from "../../utils/video";
+import useAuthStore from "../../store/authStore";
+import LikeButton from "../../components/LikeButton";
+import Comments from "../../components/Comments";
 
 interface IProps {
   postDetails: Video;
@@ -21,8 +24,10 @@ const Detail = ({ postDetails }: IProps) => {
   const [playing, setPlaying] = useState(false);
 
   const videoRef = useRef<HTMLVideoElement>(null);
-
+  const router = useRouter();
   const onVideoClick = onVideoClickHandler(playing, videoRef, setPlaying);
+  const [isVideoMuted, setIsVideoMuted] = useState(false);
+  const { userProfile } = useAuthStore();
 
   if (!post) return null;
 
@@ -40,9 +45,9 @@ const Detail = ({ postDetails }: IProps) => {
         left-2 lg:left-6 flex 
         gap-6 z-50"
         >
-          <p>
+          <p className="cursor-pointer" onClick={() => router.back()}>
             <MdOutlineCancel
-              className="text-black 
+              className="text-white 
             text-[35px]"
             ></MdOutlineCancel>
           </p>
@@ -53,6 +58,7 @@ const Detail = ({ postDetails }: IProps) => {
             <video
               ref={videoRef}
               loop
+              muted={isVideoMuted}
               onClick={onVideoClick}
               src={post.video.asset.url}
               className="h-full cursor-pointer"
@@ -71,6 +77,63 @@ const Detail = ({ postDetails }: IProps) => {
             )}
           </div>
         </div>
+
+        <div
+          className="absolute bottom-5 lg:bottom-10 right-5
+        lg:right-10 cursor-pointer"
+        >
+          {isVideoMuted ? (
+            <button onClick={() => setIsVideoMuted(false)}>
+              <HiVolumeOff className="text-white text-2xl lg:text-4xl" />
+            </button>
+          ) : (
+            <button onClick={() => setIsVideoMuted(true)}>
+              <HiVolumeUp className="text-white text-2xl lg:text-4xl" />
+            </button>
+          )}
+        </div>
+      </div>
+
+      <div className="relative w-[1000px] md:w[900px] lg:w-[700px]">
+        <div className="lg:mt-20 mt-10">
+          <div className="flex gap-3 p-2 cursor-pointer font-semibold rounded">
+            <div className="ml-4 md:w-20 md:h-20 w-16 h-16">
+              <Link href="/">
+                <>
+                  <Image
+                    alt="video"
+                    width={62}
+                    height={62}
+                    className="rounded-full"
+                    src={post.postedBy.image}
+                    layout="responsive"
+                  />
+                </>
+              </Link>
+            </div>
+
+            <div>
+              <Link href="/">
+                <div className="flex flex-col mt-3 gap-2">
+                  <p className="flex gap-2 items-center md:text-md font-bold text-primary">
+                    {post.postedBy.userName}{" "}
+                    <GoVerified className="text-blue-400 text-md" />
+                  </p>
+
+                  <p className="capitalize font-medium text-xs text-gray-500 hidden md:block">
+                    {post.postedBy.userName}
+                  </p>
+                </div>
+              </Link>
+            </div>
+          </div>
+        </div>
+
+        <p className="px-10 text-md text-gray-600 tex-lg">{post.caption}</p>
+
+        <div className="mt-10 px-10">{userProfile && <LikeButton />}</div>
+
+        <Comments />
       </div>
     </div>
   );
