@@ -27,9 +27,44 @@ const Detail = ({ postDetails }: IProps) => {
   const router = useRouter();
   const onVideoClick = onVideoClickHandler(playing, videoRef, setPlaying);
   const [isVideoMuted, setIsVideoMuted] = useState(false);
-  const { userProfile } = useAuthStore();
+  const { userProfile }: any = useAuthStore();
+
+  const [comment, setComment] = useState("");
+  const [isPostingComment, setIsPostingComment] = useState(false);
 
   if (!post) return null;
+
+  const handleLikeBtnClick = async (like: boolean) => {
+    if (userProfile) {
+      const { data } = await axios.put(`${BASE_URL}/api/like`, {
+        userId: userProfile._id,
+        postId: post._id,
+        like,
+      });
+
+      setPost({
+        ...post,
+        likes: data.likes,
+      });
+    }
+  };
+
+  const addComment = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (userProfile && comment) {
+      setIsPostingComment(true);
+
+      const { data } = await axios.put(`${BASE_URL}/api/post/${post._id}`, {
+        userId: userProfile._id,
+        comment,
+      });
+
+      setPost({ ...post, comments: data.comments });
+      setComment("");
+      setIsPostingComment(false);
+    }
+  };
 
   return (
     <div
@@ -131,9 +166,23 @@ const Detail = ({ postDetails }: IProps) => {
 
         <p className="px-10 text-md text-gray-600 tex-lg">{post.caption}</p>
 
-        <div className="mt-10 px-10">{userProfile && <LikeButton />}</div>
+        <div className="mt-10 px-10">
+          {userProfile && (
+            <LikeButton
+              likes={post.likes}
+              handleDislike={() => handleLikeBtnClick(false)}
+              handleLike={() => handleLikeBtnClick(true)}
+            />
+          )}
+        </div>
 
-        <Comments />
+        <Comments
+          comment={comment}
+          setComment={setComment}
+          addComment={addComment}
+          isPostingComment={isPostingComment}
+          comments={post.comments}
+        />
       </div>
     </div>
   );
