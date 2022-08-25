@@ -38,9 +38,7 @@ const Comments = (props: IProps) => {
         {comments?.length ? (
           <div>
             {comments.map((item, idx) => (
-              <>
-                {allUsers.map()}
-              </>
+              <>{/* {allUsers.map()} */}</>
             ))}
           </div>
         ) : (
