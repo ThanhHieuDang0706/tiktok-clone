@@ -26,7 +26,10 @@ export default async function handler(
           ])
           .commit()
       : // handle dislike
-        await client.patch(postId).unset([`likes[_ref=="${userId}"]`]);
+        await client
+          .patch(postId)
+          .unset([`likes[_ref=="${userId}"]`])
+          .commit();
 
     // success
     res.status(200).json(data);
