@@ -13,7 +13,6 @@ export default async function handler(
   if (req.method === "GET") {
     const { id } = req.query;
 
-    console.log(id);
     const query = singleUserQuery(id);
     const userVideosQuery = userCreatedPostsQuery(id);
     const userLikedVideosQuery = userLikedPostsQuery(id);

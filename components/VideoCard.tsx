@@ -56,7 +56,9 @@ const VideoCard: NextPage<IProps> = ({ post }: IProps) => {
         </div>
       </div>
 
-      <div className="lg:ml-20 justify-center flex gap-4 relative">
+      <div className="lg:ml-20 justify-center flex-1 gap-4 relative">
+        <div className="flex justify-center mb-4">{post.caption}</div>
+
         <div
           className="rounded-3xl flex justify-center"
           onMouseEnter={() => {
